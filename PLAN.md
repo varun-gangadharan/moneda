@@ -50,9 +50,19 @@ npm run test
 
 ---
 
-## Phase 1 — Database: schema, RLS & seed ☐
+## Phase 1 — Database: schema, RLS & seed ☑
 
 **Goal:** schema applied, RLS enforced, four demo sites + nine articles seeded.
+
+> **Done (2026-06-06).** `verify:db` script + `npm run verify:db` added; explicit
+> table-level grants added to the migration so the security model no longer
+> relies on Supabase's implicit default privileges. Verified offline against a
+> real Postgres 16 cluster (Supabase `auth` schema shimmed): 10/10 assertions
+> pass — 4 sites, 9 articles, site-b meter_limit=2, `articles_public` hides
+> `protected_content`, anon reads sites + previews, anon AND authenticated both
+> blocked from `articles.protected_content`, and the auto-profile trigger fires
+> with own-row RLS enforced. Run `npm run verify:db` once real Supabase creds
+> exist to confirm the same on the hosted project.
 
 **Agent prompt**
 > Apply `supabase/migrations/0001_init.sql` and `supabase/seed.sql` to the

@@ -156,6 +156,16 @@ create policy "own attempts read" on unlock_attempts for select
 -- service-role key, which bypasses RLS. This is the chokepoint that keeps
 -- gating honest.
 
+-- ─── table-level grants ───────────────────────────────────────────────────────
+-- Explicit so the model does not depend on Supabase's implicit default
+-- privileges. RLS still filters rows on top of these. Critically, NO grant on
+-- `articles` to anon/authenticated — clients reach previews only via the
+-- articles_public view below, so protected_content is doubly unreachable
+-- (no privilege AND no SELECT policy).
+grant usage on schema public to anon, authenticated;
+grant select on sites to anon, authenticated;
+grant select on profiles, entitlements, meter_events, unlock_attempts to authenticated;
+
 -- ─── public preview view ─────────────────────────────────────────────────────
 -- Safe, client-readable projection of articles WITHOUT protected_content.
 create view articles_public as
