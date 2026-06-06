@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm -v)",
+      "Bash(gh auth *)",
+      "Bash(git -C /Users/Varun/Desktop/moneda rev-parse --show-toplevel)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git -c 'user.name=Varun Gangadharan' -c user.email=varwhiz@gmail.com commit -q -m ' *)",
+      "Bash(git checkout *)",
+      "Bash(git branch *)"
+    ]
+  }
+}
