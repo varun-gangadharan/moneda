@@ -49,13 +49,20 @@ export async function checkAccess(
     }
 
     case "metered": {
+      // Metering is per-user; without a user we can't track free views, so the
+      // auth precheck must have run. Guard in case a metered site ever sets
+      // auth_required = false.
+      if (!ctx.userId) {
+        return { allowed: false, gate: { kind: "auth" }, reason: "auth required" };
+      }
       const limit = site.meter_limit ?? 0;
-      const { count } = await db
+      const { count, error } = await db
         .from("meter_events")
         .select("id", { count: "exact", head: true })
-        .eq("user_id", ctx.userId!)
+        .eq("user_id", ctx.userId)
         .eq("site_id", site.id);
-      if ((count ?? 0) < limit) {
+      // Fail closed: if we can't read the meter, gate rather than give a free read.
+      if (!error && (count ?? 0) < limit) {
         return { allowed: true, reason: "under_meter" };
       }
       return {

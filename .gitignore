@@ -34,3 +34,6 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# local IDE/agent settings
+.claude/settings.local.json

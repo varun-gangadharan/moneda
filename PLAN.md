@@ -87,11 +87,21 @@ npm run verify:db     # all assertions pass
 
 ---
 
-## Phase 2 — Auth & sessions ☐
+## Phase 2 — Auth & sessions ☑
 
 **Goal:** users can sign up / sign in (email+password, magic link, OAuth
 Google/GitHub); session persists across requests; a `profiles` row exists per
 user; signed-in state is readable in Server Components.
+
+> **Done (2026-06-06).** Implemented `src/app/login/page.tsx` (email+password
+> sign up/in, magic link, Google/GitHub OAuth, signed-in state + sign out),
+> `src/lib/identity.ts` (`getCurrentProfile`, `postAuthRedirect`), and wired
+> `auth/callback` + `middleware` to the redirect helper. Baseline scaffold type
+> errors fixed (Stripe apiVersion, typed `@supabase/ssr` cookie callbacks).
+> Verified: `tsc --noEmit` 0 errors, 16/16 unit tests, `next build` succeeds
+> (all 10 routes + middleware), and a dev-server smoke test renders `/login`
+> (HTTP 200) with every auth method plus `/` and `/onboarding` (200, middleware
+> runs). Full auth flow requires real Supabase creds — see local-testing steps.
 
 **Agent prompt**
 > Implement Supabase Auth in `src/app/login/page.tsx`: email+password (sign up +
@@ -119,10 +129,16 @@ npm run lint
 
 ---
 
-## Phase 3 — Access engine completion ☐
+## Phase 3 — Access engine completion ☑
 
 **Goal:** `checkAccess()` correctly decides all four rules + the entitlement
 precheck, fully unit-tested. No payments yet.
+
+> **Done (2026-06-06).** All four branches + entitlement precheck implemented,
+> with the metered branch failing closed on read errors. 16 unit tests cover
+> every branch (hard price resolution, registration free-on-auth, metered
+> under/at/over limit + fail-closed, custom onboarding→payment, entitlement
+> bypass). `npm test` green.
 
 **Agent prompt**
 > Complete and harden `src/lib/access/engine.ts` for all branches: `hard` →
