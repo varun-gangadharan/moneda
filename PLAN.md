@@ -162,11 +162,22 @@ npm run typecheck
 
 ---
 
-## Phase 4 — Demo pages & server-side gating ☐
+## Phase 4 — Demo pages & server-side gating ☑
 
 **Goal:** site index, per-site article list, and the article page render
 correctly; locked articles ship preview only; entitled/free articles render
 protected content — all decided server-side.
+
+> **Done (2026-06-06).** `page.tsx` (site index + auth/onboarding status +
+> per-type blurbs), `sites/[siteSlug]/page.tsx` (article list from the
+> preview-only `articles_public` view), and `sites/[siteSlug]/[articleSlug]/
+> page.tsx` (gated render via `getCurrentProfile` + `checkAccess`;
+> `protected_content` fetched ONLY inside the `decision.allowed` branch; paywall
+> modal otherwise; "✓ Access granted" confirmation). Verified: `tsc` 0 errors,
+> `next build` 11/11 routes, 16/16 unit tests, and a dev smoke test where every
+> route degrades gracefully (no 500s; gated route 404s on missing data rather
+> than crashing). The actual no-leak assertion against real data is Phase 10;
+> manual view-source steps below.
 
 **Agent prompt**
 > Polish `src/app/page.tsx`, `src/app/sites/[siteSlug]/page.tsx`, and

@@ -1,4 +1,5 @@
-// A demo site's article index. See PLAN.md Phase 8.
+// A demo site's article index. Reads the preview-only `articles_public` view —
+// never protected_content. See PLAN.md Phase 4.
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -20,7 +21,7 @@ export default async function SitePage({
 
   const { data: articles } = await supabase
     .from("articles_public")
-    .select("slug, title")
+    .select("slug, title, preview_content")
     .eq("site_id", site.id)
     .order("slug");
 
@@ -31,8 +32,10 @@ export default async function SitePage({
       <p style={{ color: "var(--muted)" }}>Paywall type: <code>{site.paywall_type}</code></p>
       <ul>
         {articles?.map((a) => (
-          <li key={a.slug}>
+          <li key={a.slug} style={{ marginBottom: 10 }}>
             <Link href={`/sites/${siteSlug}/${a.slug}`}>{a.title}</Link>
+            <br />
+            <span style={{ color: "var(--muted)", fontSize: 13 }}>{a.preview_content}</span>
           </li>
         ))}
       </ul>
