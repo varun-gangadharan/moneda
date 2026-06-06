@@ -51,7 +51,19 @@ export default async function ArticlePage({
       .maybeSingle();
     protectedContent = data?.protected_content ?? null;
 
-    // TODO(Phase 8): if decision.reason === "under_meter", log a meter_event.
+    // Metering: log exactly one event per free (under-limit) view, and ONLY for
+    // "under_meter" — never for entitled, registration, or any non-metered
+    // access. The engine counts these per (user, site) against site.meter_limit,
+    // so this insert is what eventually trips the paywall. Permanent, no reset.
+    // (under_meter is only ever returned for an authenticated user, so userId is
+    // set; the guard satisfies the type and is defensive.)
+    if (decision.reason === "under_meter" && ctx.userId) {
+      await db.from("meter_events").insert({
+        user_id: ctx.userId,
+        site_id: site.id,
+        article_id: article.id,
+      });
+    }
   }
 
   return (

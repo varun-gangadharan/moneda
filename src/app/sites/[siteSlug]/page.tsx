@@ -33,7 +33,9 @@ export default async function SitePage({
       <ul>
         {articles?.map((a) => (
           <li key={a.slug} style={{ marginBottom: 10 }}>
-            <Link href={`/sites/${siteSlug}/${a.slug}`}>{a.title}</Link>
+            {/* prefetch disabled: a metered article logs a view on render, so
+                prefetching on hover would burn meter allowance without a click. */}
+            <Link href={`/sites/${siteSlug}/${a.slug}`} prefetch={false}>{a.title}</Link>
             <br />
             <span style={{ color: "var(--muted)", fontSize: 13 }}>{a.preview_content}</span>
           </li>
