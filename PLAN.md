@@ -357,10 +357,21 @@ npm run build
 
 ---
 
-## Phase 10 — Server-side gating verification (security) ☐
+## Phase 10 — Server-side gating verification (security) ☑
 
 **Goal:** prove locked protected content is never sent to unauthorized clients,
 across all four site types.
+
+> **Done (2026-06-06).** `tests/gating.e2e.ts` + `npm run test:gating` added — a
+> dependency-free fetch test against a running dev server (uses Supabase
+> REST/Auth APIs, so no `supabase-js`/WebSocket dependency; runs on Node 18/20/22+).
+> It mints an ephemeral confirmed user via the Auth Admin API, pre-seeds Site B's
+> meter to exhaust it, forges the `@supabase/ssr` session cookie from a real
+> password-grant token, and asserts: signed-OUT A/B/C/D and signed-IN-unentitled
+> A/B(over-limit)/D all return the preview but NOT the `FULL …` marker, plus a
+> positive sanity check that signed-IN Site C *does* emit `FULL C1` (so a page
+> error can't false-pass). 17/17 assertions green; the ephemeral user is deleted
+> in a `finally` (cascades to profile/meter/entitlements).
 
 **Agent prompt**
 > Add an automated check `tests/gating.e2e.ts` (Playwright, MCP browser, or a
@@ -372,7 +383,10 @@ across all four site types.
 
 **Automated verification**
 ```bash
-npm run test:gating   # no protected markers leak for unauthorized users
+# Prereqs: dev server already running, and .env.local with NEXT_PUBLIC_SUPABASE_URL,
+# NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY. Use Node >= 18.18 (20+).
+npm run dev           # in one terminal
+npm run test:gating   # in another — no protected markers leak for unauthorized users
 ```
 
 **Local manual test**
